@@ -19,6 +19,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -26,31 +28,24 @@ import cz.msebera.android.httpclient.Header;
  */
 public class PhotoActivity extends AppCompatActivity {
 
-    final static String URL = "https://api.instagram.com/v1/media/popular?client_id=e05c462ebd86446ea48a5af73769b602";
+    final static String URL =
+            "https://api.instagram.com/v1/media/popular?client_id=e05c462ebd86446ea48a5af73769b602";
     List<PhotoResource> photos;
     PhotoAdapter photoAdapter;
-    ListView listView;
+    @Bind(R.id.lvPhotos)ListView listView;
+    @Bind(R.id.toolbar) Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
         photos = new ArrayList<>();
         fetchPopularPhotos();
 
         photoAdapter = new PhotoAdapter(this, photos);
-        listView = (ListView) findViewById(R.id.lvPhotos);
         listView.setAdapter(photoAdapter);
 
     }
@@ -114,7 +109,7 @@ public class PhotoActivity extends AppCompatActivity {
                     }
                 } catch(JSONException e) {
                     Log.i("Json exception", "In exception: " + e.getMessage());
-                    Toast.makeText(getApplicationContext(), "Something went wrong getting phots",
+                    Toast.makeText(getApplicationContext(), "Something went wrong getting photos",
                             Toast.LENGTH_SHORT).show();
                 }
                 photoAdapter.notifyDataSetChanged();
@@ -122,10 +117,9 @@ public class PhotoActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.i("Async", "in onFailure");
+                Log.i("Async", "In onFailure");
                 Toast.makeText(getApplicationContext(), "Something went wrong getting photos",
                         Toast.LENGTH_SHORT).show();
-                //super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
     }

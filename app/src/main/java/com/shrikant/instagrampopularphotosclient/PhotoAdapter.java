@@ -14,19 +14,26 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * @author Shrikant Pandhare
  */
 public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
 
     // View lookup cache
-    private static class ViewHolder {
-        ImageView imageView;
-        ImageView ivOwner;
-        TextView tvOwner;
-        TextView tvCaption;
-        TextView tvLikes;
-        TextView tvDateCreated;
+    static class ViewHolder {
+        @Bind(R.id.ivPhoto) ImageView imageView;
+        @Bind(R.id.ivOwner) ImageView ivOwner;
+        @Bind(R.id.tvOwner) TextView tvOwner;
+        @Bind(R.id.tvCaption) TextView tvCaption;
+        @Bind(R.id.tvLikes) TextView tvLikes;
+        @Bind(R.id.tvDateCreated) TextView tvDateCreated;
+
+        public ViewHolder(View view) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     public PhotoAdapter(Context context, List<PhotoResource> photos) {
@@ -41,17 +48,10 @@ public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
         // Check if an existing view is being reused, otherwise inflate the view
         ViewHolder viewHolder = null; // view lookup cache stored in tag
         if (convertView == null) {
-
-            viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.photo_item_layout,
                     parent, false);
 
-            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.ivPhoto);
-            viewHolder.ivOwner = (ImageView) convertView.findViewById(R.id.ivOwner);
-            viewHolder.tvCaption = (TextView) convertView.findViewById(R.id.tvCaption);
-            viewHolder.tvOwner = (TextView) convertView.findViewById(R.id.tvOwner);
-            viewHolder.tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
-            viewHolder.tvDateCreated = (TextView) convertView.findViewById(R.id.tvDateCreated);
+            viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();

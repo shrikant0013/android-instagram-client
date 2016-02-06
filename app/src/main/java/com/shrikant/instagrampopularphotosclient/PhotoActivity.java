@@ -21,6 +21,9 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
+/**
+ * @author Shrikant Pandhare
+ */
 public class PhotoActivity extends AppCompatActivity {
 
     final static String URL = "https://api.instagram.com/v1/media/popular?client_id=e05c462ebd86446ea48a5af73769b602";

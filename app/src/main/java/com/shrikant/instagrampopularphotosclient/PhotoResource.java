@@ -1,7 +1,7 @@
 package com.shrikant.instagrampopularphotosclient;
 
 /**
- * Created by spandhare on 2/5/16.
+ * @author Shrikant Pandhare
  */
 public class PhotoResource {
     String url;

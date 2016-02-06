@@ -1,6 +1,7 @@
 package com.shrikant.instagrampopularphotosclient;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,13 @@ public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
 
         TextView tvLikes = (TextView) convertView.findViewById(R.id.tvLikes);
         tvLikes.setText(Long.toString(photo.getLikeCount()) + " likes");
+
+        TextView tvDateCreated = (TextView) convertView.findViewById(R.id.tvDateCreated);
+        CharSequence displayCreated = DateUtils.getRelativeTimeSpanString(
+                photo.getCreatedTime() * 1000,
+                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_ALL);
+        tvDateCreated.setText(displayCreated);
 
         return convertView;
     }

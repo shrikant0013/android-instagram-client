@@ -10,6 +10,7 @@ public class PhotoResource {
     String owner;
     long likeCount;
     String ownerURL;
+    long createdTime;
 
     public String getUrl() {
         return url;
@@ -57,5 +58,13 @@ public class PhotoResource {
 
     public void setOwnerURL(String ownerURL) {
         this.ownerURL = ownerURL;
+    }
+
+    public long getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(long createdTime) {
+        this.createdTime = createdTime;
     }
 }

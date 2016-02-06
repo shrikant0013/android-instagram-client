@@ -52,45 +52,59 @@ public class PhotoActivity extends AppCompatActivity {
 
     }
 
-    /*
-    Type : { “data" => [ x ] => “type" }  <- image, video
-    URL:  { "data" => [ x ] => “images” => “standard_resolution” . url }
-    Caption:  { "data" => [ x ] => “images” => “caption” . “text” }
-    Author Name: { “data => [ x ] => “user” . “username” }
-     */
     public void fetchPopularPhotos(){
         AsyncHttpClient httpClient = new AsyncHttpClient();
         httpClient.get(URL, new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
-                    JSONArray dataArray =  response.getJSONArray("data");
-                    //Log.i("Async length", "" + dataArray.length());
+
+                    JSONArray dataArray = new JSONArray();
+                    if (response.optJSONArray("data") != null) {
+                        dataArray = response.getJSONArray("data");
+                    }
+
                     for (int i = 0; i < dataArray.length(); i++) {
-                        //Log.i("Async i", "" + i);
+                        PhotoResource photoResource = new PhotoResource();
                         JSONObject obj = dataArray.getJSONObject(i);
                         //Type : { “data" => [ x ] => “type" }  <- image, video
-                        //Log.i("Async type", obj.getString("type"));
-                        if (obj.getString("type").equalsIgnoreCase("image")) {
-                            PhotoResource photoResource = new PhotoResource();
+                        if (obj.optString("type") != null &&
+                                obj.getString("type").equalsIgnoreCase("image")) {
+
+                            //Created time: { "data" => [ x ] => "created_time" }
+                            photoResource.setCreatedTime(
+                                    Long.parseLong(obj.optString("created_time")));
+
                             //URL:  { "data" => [ x ] => “images” => “standard_resolution” . url }
-                            photoResource.setUrl(obj.getJSONObject("images")
-                                    .getJSONObject("standard_resolution").getString("url"));
+                            JSONObject jsonImagesObject = obj.optJSONObject("images");
+                            if (jsonImagesObject != null) {
+                                JSONObject jsonStandardResolutionObject =
+                                        jsonImagesObject.optJSONObject("standard_resolution");
+                                if (jsonStandardResolutionObject != null) {
+                                    photoResource.setUrl(jsonStandardResolutionObject
+                                            .optString("url"));
+                                }
+                            }
                             //Caption:  { "data" => [ x ] => “images” => “caption” . “text” }
-                            photoResource.setCaption(obj.getJSONObject("caption").getString("text"));
+                            JSONObject jsonCaptionObject = obj.optJSONObject("caption");
+                            if (jsonCaptionObject != null) {
+                                photoResource.setCaption(jsonCaptionObject.optString("text"));
+                            }
 
-                            //Author Name: { “data => [ x ] => “user” . “username” }
-                            photoResource.setOwner(obj.getJSONObject("user").getString("username"));
+                            //Owner Name: { “data => [ x ] => “user” . “username” }
+                            //Owner Profile URL: {“data => [ x ] => “user” . “profile_picture”}
+                            JSONObject jsonUserObject = obj.optJSONObject("user");
+                            if (jsonUserObject != null) {
+                                photoResource.setOwner(jsonUserObject.optString("username"));
+                                photoResource.setOwnerURL(jsonUserObject
+                                        .optString("profile_picture"));
+                            }
 
-                            //Likes
-                            photoResource.setLikeCount(obj.getJSONObject("likes").getLong("count"));
-
-                            //owner url
-                            //Likes
-                            photoResource.setOwnerURL(obj.getJSONObject("user")
-                                    .getString("profile_picture"));
-
-                            Log.i("Async", photoResource.getOwner());
+                            //Likes: { “data => [ x ] => "likes" . "count" }
+                            JSONObject jsonLikesObject = obj.optJSONObject("likes");
+                            if (jsonLikesObject != null) {
+                                photoResource.setLikeCount(jsonLikesObject.optLong("count"));
+                            }
 
                             photos.add(photoResource);
                         }
@@ -101,7 +115,6 @@ public class PhotoActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
                 photoAdapter.notifyDataSetChanged();
-                //super.onSuccess(statusCode, headers, response);
             }
 
             @Override

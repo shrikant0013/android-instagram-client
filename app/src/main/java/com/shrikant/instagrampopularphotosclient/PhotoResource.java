@@ -1,5 +1,7 @@
 package com.shrikant.instagrampopularphotosclient;
 
+import java.util.List;
+
 /**
  * @author Shrikant Pandhare
  */
@@ -11,6 +13,7 @@ public class PhotoResource {
     long likeCount;
     String ownerURL;
     long createdTime;
+    List<Comment> comments;
 
     public String getUrl() {
         return url;
@@ -66,5 +69,13 @@ public class PhotoResource {
 
     public void setCreatedTime(long createdTime) {
         this.createdTime = createdTime;
+    }
+
+    public List<Comment> getComment() {
+        return comments;
+    }
+
+    public void setComment(List<Comment> comments) {
+        this.comments = comments;
     }
 }

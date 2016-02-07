@@ -73,6 +73,32 @@
         android:textSize="20sp"
         android:maxLines="3"
         android:ellipsize="end"
-        android:id="@+id/tvCaption"/>
+        android:id="@+id/tvCaption"
+        android:paddingBottom="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            android:text="@string/label_comments"
+            android:layout_below="@id/tvCaption"
+            android:id="@+id/tvLabel_Commet"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvCommet_1"
+            android:textSize="17sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:layout_below="@id/tvLabel_Commet"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvCommet_2"
+            android:textSize="17sp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:layout_below="@id/tvCommet_1"/>
 
 </RelativeLayout>

@@ -30,6 +30,8 @@ public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
         @Bind(R.id.tvCaption) TextView tvCaption;
         @Bind(R.id.tvLikes) TextView tvLikes;
         @Bind(R.id.tvDateCreated) TextView tvDateCreated;
+        @Bind(R.id.tvCommet_1) TextView tvComment1;
+        @Bind(R.id.tvCommet_2) TextView tvComment2;
 
         public ViewHolder(View view) {
             ButterKnife.bind(this, view);
@@ -86,6 +88,17 @@ public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL);
         viewHolder.tvDateCreated.setText(displayCreated);
+
+        List<Comment> comments = photo.getComment();
+
+        if (comments != null && comments.size() > 0) {
+            viewHolder.tvComment1.setText(
+                    comments.get(0).userName + ": " + comments.get(0).commentText);
+        }
+        if (comments != null && comments.size() > 1) {
+            viewHolder.tvComment2.setText(
+                    comments.get(1).userName + ": " + comments.get(1).commentText);
+        }
 
         // Return the completed view to render on screen
         return convertView;

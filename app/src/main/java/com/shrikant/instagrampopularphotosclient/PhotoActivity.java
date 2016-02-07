@@ -18,6 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.Bind;
@@ -130,6 +132,55 @@ public class PhotoActivity extends AppCompatActivity {
                                 photoResource.setLikeCount(jsonLikesObject.optLong("count"));
                             }
 
+                            //Comments created time:
+                            // { “data[ x ] => "comments" => "data[x]" => created_time }
+                            //Comments text:
+                            // { “data[ x ] => "comments" => "data[x]" => text }
+                            //Comments username:
+                            // { “data[ x ] => "comments" => "data[x]" => "from" . "username" }
+                            //Comments profile url:
+                            // { “data[ x ] => "comments" =>
+                            // "data[x]"  => "from" . "profile_picture" }
+
+                            List<Comment> comments = new ArrayList<>();
+                            JSONObject jsonCommentsObject = obj.optJSONObject("comments");
+                            if (jsonCommentsObject != null
+                                    && jsonCommentsObject.optJSONArray("data") != null) {
+                                JSONArray commentsDataArray =
+                                        jsonCommentsObject.optJSONArray("data");
+
+                                for (int j = 0; j < commentsDataArray.length(); j++) {
+                                    Comment comment = new Comment();
+                                    JSONObject commentJsonObject =
+                                            commentsDataArray.getJSONObject(j);
+
+                                    if (commentJsonObject != null) {
+                                        comment.commentText = commentJsonObject.optString("text");
+                                        comment.createdTime =
+                                                Long.parseLong(commentJsonObject
+                                                        .optString("created_time"));
+
+                                        JSONObject commentFromJsonObject =
+                                                commentJsonObject.getJSONObject("from");
+
+                                        if (commentFromJsonObject != null) {
+                                            comment.userName =
+                                                    commentFromJsonObject.optString("username");
+                                            comment.profileURL =
+                                                    commentFromJsonObject.optString("profile_picture");
+                                        }
+                                    }
+                                    comments.add(comment);
+                                }
+                                Collections.sort(comments, new Comparator<Comment>() {
+                                    @Override
+                                    public int compare(Comment lhs, Comment rhs) {
+                                        return (int) (rhs.createdTime - lhs.createdTime);
+                                    }
+                                });
+
+                                photoResource.setComment(comments);
+                            }
                             photos.add(photoResource);
                         }
                     }

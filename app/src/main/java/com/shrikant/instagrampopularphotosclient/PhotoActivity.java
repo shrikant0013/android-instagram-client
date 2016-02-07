@@ -1,6 +1,7 @@
 package com.shrikant.instagrampopularphotosclient;
 
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,8 +33,10 @@ public class PhotoActivity extends AppCompatActivity {
             "https://api.instagram.com/v1/media/popular?client_id=e05c462ebd86446ea48a5af73769b602";
     List<PhotoResource> photos;
     PhotoAdapter photoAdapter;
+    List<PhotoResource> photosLocal;
     @Bind(R.id.lvPhotos)ListView listView;
     @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.swipeContainer) SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,18 +44,41 @@ public class PhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-
         photos = new ArrayList<>();
-        fetchPopularPhotos();
+
+        // Setup refresh listener which triggers new data loading
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                //fetchTimelineAsync(0);
+                fetchPopularPhotos(true);
+            }
+        });
+        // Configure the refreshing colors
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        fetchPopularPhotos(false);
 
         photoAdapter = new PhotoAdapter(this, photos);
         listView.setAdapter(photoAdapter);
 
     }
 
-    public void fetchPopularPhotos(){
+    public void fetchPopularPhotos(final boolean isRefreshed){
+        photosLocal = new ArrayList<>();
+        if (isRefreshed) {
+            photoAdapter.clear();
+        }
+
         AsyncHttpClient httpClient = new AsyncHttpClient();
-        httpClient.get(URL, new JsonHttpResponseHandler(){
+
+        httpClient.get(URL, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -107,12 +133,16 @@ public class PhotoActivity extends AppCompatActivity {
                             photos.add(photoResource);
                         }
                     }
-                } catch(JSONException e) {
+                } catch (JSONException e) {
                     Log.i("Json exception", "In exception: " + e.getMessage());
                     Toast.makeText(getApplicationContext(), "Something went wrong getting photos",
                             Toast.LENGTH_SHORT).show();
                 }
-                photoAdapter.notifyDataSetChanged();
+                if (isRefreshed) {
+                    photoAdapter.addAll(photos);
+                    swipeRefreshLayout.setRefreshing(false);
+                } else
+                    photoAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -145,4 +175,10 @@ public class PhotoActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+//    @OnRefreshListener(R.id.swipeContainer)
+//    public void refresh() {
+//
+//    }
+
 }

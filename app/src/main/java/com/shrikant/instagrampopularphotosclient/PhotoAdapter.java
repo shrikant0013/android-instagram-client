@@ -66,7 +66,8 @@ public class PhotoAdapter extends ArrayAdapter<PhotoResource> {
 
         //ImageView imageView = (ImageView) convertView.findViewById(R.id.ivPhoto);
         viewHolder.imageView.setImageResource(0); //clear off
-        Picasso.with(getContext()).load(photo.getUrl()).into(viewHolder.imageView);
+        Picasso.with(getContext()).load(photo.getUrl()).placeholder(R.mipmap.ic_busy)
+                .into(viewHolder.imageView);
 
         //ImageView ivOwner = (ImageView) convertView.findViewById(R.id.ivOwner);
         viewHolder.ivOwner.setImageResource(0); //clear off

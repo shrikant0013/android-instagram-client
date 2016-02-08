@@ -95,7 +95,8 @@ public class PhotoActivity extends AppCompatActivity {
                         JSONObject obj = dataArray.getJSONObject(i);
                         //Type : { “data" => [ x ] => “type" }  <- image, video
                         if (obj.optString("type") != null &&
-                                obj.getString("type").equalsIgnoreCase("image")) {
+                                (obj.getString("type").equalsIgnoreCase("image"))) {
+                                //|| obj.getString("type").equalsIgnoreCase("video"))) {
 
                             //Created time: { "data" => [ x ] => "created_time" }
                             photoResource.setCreatedTime(

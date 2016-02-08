@@ -1,5 +1,6 @@
 package com.shrikant.instagrampopularphotosclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,7 @@ public class PhotoActivity extends AppCompatActivity {
     List<PhotoResource> photos;
     PhotoAdapter photoAdapter;
     List<PhotoResource> photosLocal;
+    ArrayList<Comment> comments;
     @Bind(R.id.lvPhotos)ListView listView;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.swipeContainer) SwipeRefreshLayout swipeRefreshLayout;
@@ -55,7 +57,6 @@ public class PhotoActivity extends AppCompatActivity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                //fetchTimelineAsync(0);
                 fetchPopularPhotos(true);
             }
         });
@@ -96,7 +97,7 @@ public class PhotoActivity extends AppCompatActivity {
                         //Type : { “data" => [ x ] => “type" }  <- image, video
                         if (obj.optString("type") != null &&
                                 (obj.getString("type").equalsIgnoreCase("image"))) {
-                                //|| obj.getString("type").equalsIgnoreCase("video"))) {
+                            //|| obj.getString("type").equalsIgnoreCase("video"))) {
 
                             //Created time: { "data" => [ x ] => "created_time" }
                             photoResource.setCreatedTime(
@@ -133,30 +134,31 @@ public class PhotoActivity extends AppCompatActivity {
                                 photoResource.setLikeCount(jsonLikesObject.optLong("count"));
                             }
 
-                            //Comments created time:
-                            // { “data[ x ] => "comments" => "data[x]" => created_time }
-                            //Comments text:
-                            // { “data[ x ] => "comments" => "data[x]" => text }
-                            //Comments username:
-                            // { “data[ x ] => "comments" => "data[x]" => "from" . "username" }
-                            //Comments profile url:
-                            // { “data[ x ] => "comments" =>
-                            // "data[x]"  => "from" . "profile_picture" }
-
-                            List<Comment> comments = new ArrayList<>();
+                            comments = new ArrayList<>();
+                            //{ "data" => [x] => "comments"
                             JSONObject jsonCommentsObject = obj.optJSONObject("comments");
                             if (jsonCommentsObject != null
                                     && jsonCommentsObject.optJSONArray("data") != null) {
+
+                                // { "data" => [x] => "comments" . "count"
+                                photoResource.setCommentsCount(
+                                        Long.parseLong(jsonCommentsObject.optString("count")));
                                 JSONArray commentsDataArray =
                                         jsonCommentsObject.optJSONArray("data");
-
+                                Log.i("Comment", "Total comments from JSON array:"
+                                        + commentsDataArray.length());
                                 for (int j = 0; j < commentsDataArray.length(); j++) {
                                     Comment comment = new Comment();
                                     JSONObject commentJsonObject =
                                             commentsDataArray.getJSONObject(j);
 
                                     if (commentJsonObject != null) {
+                                        //Comments text:
+                                        // { “data[ x ] => "comments" => "data[x]" => text }
                                         comment.commentText = commentJsonObject.optString("text");
+
+                                        //Comments created time:
+                                        // { “data[ x ] => "comments" => "data[x]" => created_time }
                                         comment.createdTime =
                                                 Long.parseLong(commentJsonObject
                                                         .optString("created_time"));
@@ -165,8 +167,13 @@ public class PhotoActivity extends AppCompatActivity {
                                                 commentJsonObject.getJSONObject("from");
 
                                         if (commentFromJsonObject != null) {
+                                            //Comments username:
+                                            // { “data[ x ] => "comments" => "data[x]" => "from" . "username" }
                                             comment.userName =
                                                     commentFromJsonObject.optString("username");
+                                            //Comments profile url:
+                                            // { “data[ x ] => "comments" =>
+                                            // "data[x]"  => "from" . "profile_picture" }
                                             comment.profileURL =
                                                     commentFromJsonObject.optString("profile_picture");
                                         }
@@ -179,7 +186,7 @@ public class PhotoActivity extends AppCompatActivity {
                                         return (int) (rhs.createdTime - lhs.createdTime);
                                     }
                                 });
-
+                                Log.i("Comment", "Total comments found:" + comments.size());
                                 photoResource.setComment(comments);
                             }
                             photos.add(photoResource);
@@ -232,5 +239,13 @@ public class PhotoActivity extends AppCompatActivity {
 //    public void refresh() {
 //
 //    }
+
+//    @OnClick(R.id.tvLabel_Commet)
+    public void viewAllComments(ArrayList<Comment> comments) {
+        Toast.makeText(this, "View comment clicked", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(this, CommentsActivity.class);
+        i.putParcelableArrayListExtra("comments", comments);
+        startActivity(i);
+    }
 
 }

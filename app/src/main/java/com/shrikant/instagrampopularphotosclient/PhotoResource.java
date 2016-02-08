@@ -14,6 +14,7 @@ public class PhotoResource {
     String ownerURL;
     long createdTime;
     List<Comment> comments;
+    long commentsCount;
 
     public String getUrl() {
         return url;
@@ -77,5 +78,13 @@ public class PhotoResource {
 
     public void setComment(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public long getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(long commentsCount) {
+        this.commentsCount = commentsCount;
     }
 }
